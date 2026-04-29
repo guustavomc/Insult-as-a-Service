@@ -1,4 +1,4 @@
-package main.java.com.iaas.api.model;
+package com.iaas.api.model;
 
 public class InsultResponse {
 

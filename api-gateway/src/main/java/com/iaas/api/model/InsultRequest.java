@@ -1,6 +1,9 @@
-package main.java.com.iaas.api.model;
+package com.iaas.api.model;
 
 import java.util.List;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class InsultRequest {
 
