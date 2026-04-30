@@ -20,6 +20,11 @@ public class InsultService {
     }
 
     public Mono<InsultResponse> getInsult(InsultRequest request){
-        return cache.get(request).switchIfEmpty(pythonClient.generateInsult(request).flatMap(response -> cache.put(request, response).thenReturn(response)));
+        return cache.get(request)
+                    .switchIfEmpty(pythonClient
+                        .generateInsult(request)
+                        .flatMap(
+                            response -> cache.put(request, response)
+                            .thenReturn(response)));
     }
 }
