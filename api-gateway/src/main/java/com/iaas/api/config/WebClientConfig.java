@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 public class WebClientConfig {
 
     @Bean
-    public WebClient pythonServiceWebClient(@Value("python-service.base-url") String baseUrl){
+    public WebClient pythonServiceWebClient(@Value("${python-service.base-url}") String baseUrl){
         return WebClient.builder().baseUrl(baseUrl).build();
     }
 

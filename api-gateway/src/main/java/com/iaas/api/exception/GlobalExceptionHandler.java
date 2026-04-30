@@ -16,21 +16,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(WebExchangeBindException.class)
     public ResponseEntity<Map<String,Object>> handleValidation(WebExchangeBindException ex) {
         return buildErrorResponse(
-            "Validation failed" + ex.getMessage(),
+            "Validation failed: " + ex.getMessage(),
             HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DownstreamException.class)
     public ResponseEntity<Map<String,Object>> handleDownstream(DownstreamException ex) {
         return buildErrorResponse(
-            "Downstream service error" + ex.getMessage(),
+            "Downstream service error: " + ex.getMessage(),
             HttpStatus.BAD_GATEWAY);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String,Object>> handleGeneric(Exception ex) {
         return buildErrorResponse(
-            "Unexpected error" + ex.getMessage(),
+            "Unexpected error: " + ex.getMessage(),
             HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
