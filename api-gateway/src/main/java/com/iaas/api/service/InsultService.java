@@ -19,12 +19,14 @@ public class InsultService {
         this.pythonClient = pythonClient;
     }
 
-    public Mono<InsultResponse> getInsult(InsultRequest request){
-        return cache.get(request)
-                    .switchIfEmpty(pythonClient
-                        .generateInsult(request)
-                        .flatMap(
-                            response -> cache.put(request, response)
-                            .thenReturn(response)));
+    public Mono<InsultResponse> getInsult(InsultRequest request) {
+    return cache.get(request)
+            .switchIfEmpty(Mono.defer(() ->
+                    pythonClient.generateInsult(request)
+                            .flatMap(
+                                response -> cache
+                                    .put(request, response)
+                                    .thenReturn(response))
+            ));
     }
 }
