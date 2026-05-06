@@ -45,4 +45,21 @@ public class InsultControllerTest {
                 .expectBody()
                 .jsonPath("$.insult").isEqualTo("You magnificent slow-witted walnut.");
     }
+
+    @Test
+    void retursHTTP400WhenNameIsEmpty(){
+        InsultResponse insultResponse = new InsultResponse();
+        insultResponse.setInsult("You magnificent slow-witted walnut.");
+    
+        when(insultService.getInsult(any())).thenReturn(Mono.just(insultResponse));
+
+        webTestClient.post()
+                .uri("/api/iaas/insult")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue("""
+                        {"name": "", "characteristics": ["slow", "arrogant"]}
+                        """)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
 }
