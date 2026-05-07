@@ -98,4 +98,58 @@ public class InsultCacheServiceTest {
         assertThat(ttlCaptor.getValue()).isEqualTo(Duration.ofSeconds(300));
 
     }
+
+    @Test
+    void sameInputAlwaysProducesSameCacheKey(){
+        InsultResponse insultResponse = new InsultResponse();
+        insultResponse.setInsult("insult:");
+
+        InsultRequest insultRequest = new InsultRequest();
+        insultRequest.setName("John");
+        insultRequest.setCharacteristics(List.of("slow", "arrogant"));
+
+        when(valueOperations.get(any(String.class)))
+                .thenReturn(Mono.just(insultResponse));
+
+        insultCacheService.get(insultRequest).block();
+        insultCacheService.get(insultRequest).block();
+
+        ArgumentCaptor<String> keyCaptor = ArgumentCaptor.forClass(String.class);
+        verify(valueOperations, times(2)).get(keyCaptor.capture());
+
+        List<String> keys = keyCaptor.getAllValues();
+        assertThat(keys.get(0)).isEqualTo(keys.get(1));
+        assertThat(keys.get(0)).startsWith("insult:");
+
+    }
+
+    @Test
+    void differentInputsProduceDifferentCacheKeys(){
+        when(valueOperations.get(any(String.class)))
+                .thenReturn(Mono.empty());
+
+        InsultResponse insultResponse1 = new InsultResponse();
+        insultResponse1.setInsult("insult:");
+
+        InsultRequest insultRequest1 = new InsultRequest();
+        insultRequest1.setName("John");
+        insultRequest1.setCharacteristics(List.of("slow"));
+
+        InsultResponse insultResponse2 = new InsultResponse();
+        insultResponse2.setInsult("insult:");
+
+        InsultRequest insultRequest2 = new InsultRequest();
+        insultRequest2.setName("Jane");
+        insultRequest2.setCharacteristics(List.of("rude"));
+
+
+        insultCacheService.get(insultRequest1).block();
+        insultCacheService.get(insultRequest2).block();
+
+        ArgumentCaptor<String> keyCaptor = ArgumentCaptor.forClass(String.class);
+        verify(valueOperations, times(2)).get(keyCaptor.capture());
+
+        List<String> keys = keyCaptor.getAllValues();
+        assertThat(keys.get(0)).isNotEqualTo(keys.get(1));
+    }
 }
