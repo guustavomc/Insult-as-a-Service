@@ -10,3 +10,7 @@ app = FastAPI()
 def insult(request: InsultRequest) -> InsultRequest:
     result = generate_insult(request.name, request.characteristics)
     return InsultResponse(insult=result)
+
+@app.get("/health")
+def health() -> dict:
+    return {"status": "ok"}
