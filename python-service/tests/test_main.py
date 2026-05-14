@@ -32,3 +32,22 @@ def test_insult_returns_422_when_name_is_blank():
         "characteristics": ["slow", "arrogant"]
     })
     assert response.status_code == 422
+
+def test_insult_returns_422_when_name_is_missing():
+    response = client.post("/insult", json={
+        "characteristics": ["slow", "arrogant"]
+    })
+    assert response.status_code == 422
+
+def test_insult_returns_422_when_characteristics_is_missing():
+    response = client.post("/insult", json={
+            "name": "John"
+        })
+    assert response.status_code == 422
+
+def test_insult_delegates_to_generator():
+    with patch("main.generate_insult", return_value="mocked insult") as mock_gen:
+        response = client.post("/insult", json={
+            "name": "John",
+            "characteristics": ["slow"]
+        })
