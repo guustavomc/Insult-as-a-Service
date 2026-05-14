@@ -1,4 +1,4 @@
 fastapi
 uvicorn
-pytest --cov
+pytest-cov
 httpx

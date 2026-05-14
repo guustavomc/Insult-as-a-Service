@@ -51,3 +51,6 @@ def test_insult_delegates_to_generator():
             "name": "John",
             "characteristics": ["slow"]
         })
+        assert response.status_code == 200
+        assert response.json()["insult"] == "mocked insult"
+        mock_gen.assert_called_once_with("John", ["slow"])
