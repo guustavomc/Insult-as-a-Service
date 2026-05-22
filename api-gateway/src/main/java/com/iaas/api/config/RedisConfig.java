@@ -22,4 +22,11 @@ public class RedisConfig {
 
         return new ReactiveRedisTemplate<>(factory, context);
     }
+
+    @Bean
+    public ReactiveRedisTemplate<String, String> reactiveStringRedisTemplate(
+            ReactiveRedisConnectionFactory factory) {
+        return new ReactiveRedisTemplate<>(factory, RedisSerializationContext.string());
+    }
+
 }
