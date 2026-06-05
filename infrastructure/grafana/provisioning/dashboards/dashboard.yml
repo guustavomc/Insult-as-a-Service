@@ -1,0 +1,7 @@
+apiVersion: 1
+providers:
+  - name: IaaS
+    folder: IaaS
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards
