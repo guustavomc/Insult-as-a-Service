@@ -12,8 +12,10 @@ import com.iaas.api.model.InsultRequest;
 import com.iaas.api.model.InsultResponse;
 
 import reactor.core.publisher.Mono;
-
 import org.springframework.beans.factory.annotation.Value;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+
 
 @Service
 public class InsultCacheService {
@@ -21,15 +23,24 @@ public class InsultCacheService {
     private final ReactiveRedisTemplate<String, InsultResponse> redisTemplate;
 
     private final Duration ttl;
+
+    private final Counter cacheHits;
+    private final Counter cacheMisses;
     
     public InsultCacheService(ReactiveRedisTemplate<String, InsultResponse> redisTemplate,
-        @Value("${cache.ttl-seconds:300}") long ttlSeconds){
+        @Value("${cache.ttl-seconds:300}") long ttlSeconds, MeterRegistry meterRegistry){
             this.redisTemplate = redisTemplate;
             this.ttl = Duration.ofSeconds(ttlSeconds);
+            this.cacheHits   = Counter.builder("insult.cache.hits").register(meterRegistry);
+            this.cacheMisses = Counter.builder("insult.cache.misses").register(meterRegistry);
     }
     
-    public Mono<InsultResponse> get(InsultRequest request){
-        return redisTemplate.opsForValue().get(cacheKey(request));
+    public Mono<InsultResponse> get(InsultRequest request) {
+        return redisTemplate.opsForValue().get(cacheKey(request))
+            .doOnSuccess(v -> {
+                if (v != null) cacheHits.increment();
+                else           cacheMisses.increment();
+            });
     }
 
     public Mono<Boolean> put(InsultRequest request, InsultResponse response) {
