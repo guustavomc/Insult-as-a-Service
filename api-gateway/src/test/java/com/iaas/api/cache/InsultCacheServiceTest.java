@@ -41,7 +41,7 @@ public class InsultCacheServiceTest {
     void setUp() {
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         // constructed manually because @InjectMocks can't inject @Value constructor params
-        insultCacheService = new InsultCacheService(redisTemplate, 300);
+        insultCacheService = new InsultCacheService(redisTemplate, 300, new io.micrometer.core.instrument.simple.SimpleMeterRegistry());
     }
 
 
